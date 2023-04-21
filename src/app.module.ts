@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { User } from './users/models/user.entity';
 import { PartnersModule } from './partners/partners.module';
@@ -14,6 +13,7 @@ import { Washer } from './washers/models/washer.entity';
   imports: [
     UsersModule,
     TypeOrmModule.forFeature([User, Partner, Washer]),
+    // подключить базу данных через параметры в TypeOrmModule.forRoot
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -21,14 +21,14 @@ import { Washer } from './washers/models/washer.entity';
       username: 'postgres',
       password: '6600',
       database: 'washerDB',
-      entities: [User, Partner],
+      entities: [User, Partner, Washer],
       synchronize: true,
     }),
     PartnersModule,
     WashersModule,
   ],
   controllers: [AuthController],
-  providers: [AppService, AuthService],
+  providers: [AuthService],
 })
 export class AppModule {}
 

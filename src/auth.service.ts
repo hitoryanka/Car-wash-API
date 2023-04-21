@@ -87,6 +87,23 @@ export class AuthService {
 
     return existingUserOrPartner;
   }
+
+  currentUser(id: number, role: string) {
+    if (role === 'user') {
+      return this.usersRepository.findOne({
+        where: {
+          id,
+        },
+      });
+    } else if (role === 'partner') {
+      return this.partnersRepository.findOne({
+        where: {
+          id,
+        },
+      });
+    }
+    throw new NotFoundException('no user signed in currently');
+  }
 }
 
 async function hashPassword(createPartnerDto: CreatePartnerDto) {

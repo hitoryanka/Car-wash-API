@@ -1,4 +1,13 @@
-import { Controller, Post, Body, UseInterceptors, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseInterceptors,
+  Param,
+  BadRequestException,
+  Session,
+  Get,
+} from '@nestjs/common';
 import { ClassSerializerInterceptor } from '@nestjs/common/serializer';
 import { AuthService } from './auth.service';
 import { CreatePartnerDto } from './partners/dtos/create-partner.dto';
@@ -10,22 +19,54 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup/partner')
-  signupPartner(@Body() createPartnerDto: CreatePartnerDto) {
-    return this.authService.signupPartner(createPartnerDto);
+  async signupPartner(
+    @Body() createPartnerDto: CreatePartnerDto,
+    @Session() session: any,
+  ) {
+    const user = await this.authService.signupPartner(createPartnerDto);
+    session.id = user.id;
+    session.role = 'partner';
+
+    return user;
   }
 
   @Post('signup/user')
-  signupUser(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signupUser(createUserDto);
+  async signupUser(
+    @Body() createUserDto: CreateUserDto,
+    @Session() session: any,
+  ) {
+    const user = await this.authService.signupUser(createUserDto);
+    session.id = user.id;
+    session.role = 'user';
+
+    return user;
   }
 
   @Post('signin/:role')
-  signin(
+  async signin(
     @Param('role') role: 'user' | 'partner',
-    @Body() { email, password }: { email: string; password: string },
+    @Body() body: any,
+    @Session() session: any,
   ) {
-    return this.authService.signin(email, password, role);
+    if (body.email === undefined || body.password === undefined)
+      throw new BadRequestException(
+        'not all required fields provided (email, password)',
+      );
+    const user = await this.authService.signin(body.email, body.password, role);
+    session.id = user.id;
+    session.role = role;
+
+    return user;
+  }
+
+  @Get('current_user')
+  currentUser(@Session() session: any) {
+    return this.authService.currentUser(session.id, session.role);
+  }
+
+  @Post('signout')
+  signout(@Session() session: any) {
+    session.id = null;
+    session.role = null;
   }
 }
-
-// TODO when not all fields provided app crashes with 500

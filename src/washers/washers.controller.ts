@@ -37,6 +37,3 @@ export class WashersController {
     return `deletes washer with id: ${id}`;
   }
 }
-
-// TODO partner provides washer_id on registration
-// TODO if id to connect partner to a washer was not provided - create new washer

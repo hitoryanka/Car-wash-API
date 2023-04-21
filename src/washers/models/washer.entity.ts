@@ -5,7 +5,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Partner } from 'src/partners/models/partner.entity';
+import { Partner } from '../../partners/models/partner.entity';
 
 @Entity()
 export class Washer {
@@ -15,7 +15,7 @@ export class Washer {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text', array: true })
   features: string[];
 
   @OneToOne((type) => Partner, (partner) => partner.washer)
