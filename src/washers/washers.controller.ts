@@ -20,7 +20,7 @@ export class WashersController {
     return `return washer with id: ${id}`;
   }
 
-  @Post(':id')
+  @Post('create')
   create(@Param('id') id: number, @Body() body: any) {
     console.log(body);
     return `create washer with id: ${id}`;
@@ -32,7 +32,7 @@ export class WashersController {
     return `updates washer with id: ${id}`;
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   remove(@Param('id') id: number) {
     return `deletes washer with id: ${id}`;
   }
